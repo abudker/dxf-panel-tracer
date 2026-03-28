@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-scale-calibration-02-01-PLAN.md
-last_updated: "2026-03-28T22:05:10.415Z"
+status: verifying
+stopped_at: Completed 02-scale-calibration-02-02-PLAN.md
+last_updated: "2026-03-28T22:09:18.822Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 Phase: 02 (scale-calibration) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0%
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation-and-photo-display P01 | 3 | 3 tasks | 11 files |
 | Phase 01-foundation-and-photo-display P02 | 2min | 3 tasks | 6 files |
 | Phase 02-scale-calibration P01 | 2min | 3 tasks | 8 files |
+| Phase 02-scale-calibration P02 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,8 @@ Recent decisions affecting current work:
 - [Phase 02-scale-calibration]: CalibrationClickState (transient) kept separate from CalibrationState (persistent) so prior pxPerMm survives re-calibration flow
 - [Phase 02-scale-calibration]: setToolMode guard uses mode !== 'select' && mode !== 'calibrate' — forward-compatible with Phase 3 drawing tools without further changes
 - [Phase 02-scale-calibration]: cancelCalibration preserves existing calibration result so ruler overlay remains visible during re-calibration attempt
+- [Phase 02-scale-calibration]: RulerOverlay uses inline styles for pixel-accurate tick positioning computed at runtime — Tailwind JIT cannot generate arbitrary pixel values
+- [Phase 02-scale-calibration]: Minor tick spacing derived from adjacent major tick screenX values rather than pre-calculated majorIntervalPx (more accurate, passes TypeScript strict mode)
 
 ### Pending Todos
 
@@ -86,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28T22:05:10.413Z
-Stopped at: Completed 02-scale-calibration-02-01-PLAN.md
+Last session: 2026-03-28T22:09:18.820Z
+Stopped at: Completed 02-scale-calibration-02-02-PLAN.md
 Resume file: None
