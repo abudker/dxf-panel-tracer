@@ -4,6 +4,7 @@ import { CanvasStage } from './components/CanvasStage';
 import { DropZoneOverlay } from './components/DropZoneOverlay';
 import { CalibrationModal } from './components/CalibrationModal';
 import { Toast } from './components/Toast';
+import { RulerOverlay } from './components/RulerOverlay';
 import { usePhotoUpload } from './hooks/usePhotoUpload';
 import { useAppStore } from './store/useAppStore';
 
@@ -28,6 +29,7 @@ function App() {
       ) : (
         <DropZoneOverlay onFileSelect={onFileSelect} />
       )}
+      <RulerOverlay />
     </div>
   );
 }
