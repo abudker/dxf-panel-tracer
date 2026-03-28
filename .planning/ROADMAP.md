@@ -44,7 +44,12 @@ Plans:
   1. User can click two points on the photo and enter a real-world distance to set the scale
   2. A visual ruler overlay appears on the canvas after calibration, showing real-world units
   3. Attempting to draw before setting a scale reference triggers a visible warning
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Calibration types, Zustand slice, two-click interaction, modal dialog, toolbar button, toast warning
+- [ ] 02-02-PLAN.md — Ruler overlay with auto-scaling ticks, human verification of full calibration flow
+
 **UI hint**: yes
 
 ### Phase 3: Drawing Tools
@@ -75,11 +80,11 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Photo Display | 0/2 | Planning complete | - |
-| 2. Scale Calibration | 0/? | Not started | - |
+| 1. Foundation and Photo Display | 2/2 | Planning complete | - |
+| 2. Scale Calibration | 0/2 | Planning complete | - |
 | 3. Drawing Tools | 0/? | Not started | - |
 | 4. DXF Export and Polish | 0/? | Not started | - |
