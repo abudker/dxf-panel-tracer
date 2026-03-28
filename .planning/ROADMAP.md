@@ -62,7 +62,12 @@ Plans:
   3. Endpoints snap to nearby existing endpoints so segments connect without gaps
   4. User can click a segment to select it and press delete to remove it
   5. User can undo and redo individual drawing actions
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Types, geometry utilities, Zustand store extension with segments/undo/redo
+- [ ] 03-02-PLAN.md — DrawingLayer rendering, CanvasStage click routing, Toolbar buttons, keyboard shortcuts
+
 **UI hint**: yes
 
 ### Phase 4: DXF Export and Polish
@@ -86,5 +91,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation and Photo Display | 2/2 | Planning complete | - |
 | 2. Scale Calibration | 0/2 | Planning complete | - |
-| 3. Drawing Tools | 0/? | Not started | - |
+| 3. Drawing Tools | 0/2 | Planning complete | - |
 | 4. DXF Export and Polish | 0/? | Not started | - |
