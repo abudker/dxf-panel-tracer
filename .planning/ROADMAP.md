@@ -80,7 +80,13 @@ Plans:
   3. Arcs appear convex/concave in the correct direction and the path is not shown as open/magenta in Carbide Create
   4. User is warned before export if the traced shape is not closed
   5. The downloaded file has a sensible default name including the current date
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — TDD: Pure DXF export utility (buildDxfString, isShapeClosed, downloadDxf) with Vitest
+- [ ] 04-02-PLAN.md — Export button in Toolbar, ClosureWarningModal, store wiring, human verification
+
+**UI hint**: yes
 
 ## Progress
 
@@ -92,4 +98,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Foundation and Photo Display | 2/2 | Planning complete | - |
 | 2. Scale Calibration | 0/2 | Planning complete | - |
 | 3. Drawing Tools | 2/2 | Complete   | 2026-03-28 |
-| 4. DXF Export and Polish | 0/? | Not started | - |
+| 4. DXF Export and Polish | 0/2 | Planning complete | - |
