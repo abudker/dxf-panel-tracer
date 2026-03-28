@@ -65,7 +65,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Types, geometry utilities, Zustand store extension with segments/undo/redo
+- [x] 03-01-PLAN.md — Types, geometry utilities, Zustand store extension with segments/undo/redo
 - [ ] 03-02-PLAN.md — DrawingLayer rendering, CanvasStage click routing, Toolbar buttons, keyboard shortcuts
 
 **UI hint**: yes

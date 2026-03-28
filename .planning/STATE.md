@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 02-scale-calibration-02-02-PLAN.md
-last_updated: "2026-03-28T22:12:38.709Z"
+status: executing
+stopped_at: Completed 03-drawing-tools-03-01-PLAN.md
+last_updated: "2026-03-28T22:30:58.107Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 6
+  completed_plans: 5
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Accurately trace and scale a photographed shape into a clean DXF file that can be cut on a CNC without further cleanup.
-**Current focus:** Phase 02 — scale-calibration
+**Current focus:** Phase 03 — drawing-tools
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 03 (drawing-tools) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0%
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation-and-photo-display P02 | 2min | 3 tasks | 6 files |
 | Phase 02-scale-calibration P01 | 2min | 3 tasks | 8 files |
 | Phase 02-scale-calibration P02 | 2min | 2 tasks | 2 files |
+| Phase 03-drawing-tools P01 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 02-scale-calibration]: cancelCalibration preserves existing calibration result so ruler overlay remains visible during re-calibration attempt
 - [Phase 02-scale-calibration]: RulerOverlay uses inline styles for pixel-accurate tick positioning computed at runtime — Tailwind JIT cannot generate arbitrary pixel values
 - [Phase 02-scale-calibration]: Minor tick spacing derived from adjacent major tick screenX values rather than pre-calculated majorIntervalPx (more accurate, passes TypeScript strict mode)
+- [Phase 03-drawing-tools]: Canvas-convention angles stored in ArcSegment, DXF CCW conversion at export (Phase 4)
+- [Phase 03-drawing-tools]: Snapshot-based undo/redo (Segment[][] arrays, max 50) for two user-facing drawing actions
+- [Phase 03-drawing-tools]: arcDirectionFromThreePoints uses CCW sweep membership check (handles angle wrap-around correctly)
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28T22:09:18.820Z
-Stopped at: Completed 02-scale-calibration-02-02-PLAN.md
+Last session: 2026-03-28T22:30:58.105Z
+Stopped at: Completed 03-drawing-tools-03-01-PLAN.md
 Resume file: None

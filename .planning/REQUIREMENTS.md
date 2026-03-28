@@ -7,13 +7,13 @@
 
 ### Drawing Tools
 
-- [ ] **DRAW-01**: User can draw straight lines by clicking start and end points
-- [ ] **DRAW-02**: User can draw arcs by clicking start point, end point, and a point on the arc
-- [ ] **DRAW-03**: Endpoints snap to nearby existing endpoints within a threshold
+- [x] **DRAW-01**: User can draw straight lines by clicking start and end points
+- [x] **DRAW-02**: User can draw arcs by clicking start point, end point, and a point on the arc
+- [x] **DRAW-03**: Endpoints snap to nearby existing endpoints within a threshold
 - [ ] **DRAW-04**: User can select a segment by clicking it
 - [ ] **DRAW-05**: User can delete a selected segment
-- [ ] **DRAW-06**: User can undo the last action
-- [ ] **DRAW-07**: User can redo an undone action
+- [x] **DRAW-06**: User can undo the last action
+- [x] **DRAW-07**: User can redo an undone action
 
 ### Photo & Calibration
 
@@ -66,13 +66,13 @@
 | PHOTO-04 | Phase 2 | Complete |
 | PHOTO-05 | Phase 2 | Complete |
 | PHOTO-06 | Phase 2 | Complete |
-| DRAW-01 | Phase 3 | Pending |
-| DRAW-02 | Phase 3 | Pending |
-| DRAW-03 | Phase 3 | Pending |
+| DRAW-01 | Phase 3 | Complete |
+| DRAW-02 | Phase 3 | Complete |
+| DRAW-03 | Phase 3 | Complete |
 | DRAW-04 | Phase 3 | Pending |
 | DRAW-05 | Phase 3 | Pending |
-| DRAW-06 | Phase 3 | Pending |
-| DRAW-07 | Phase 3 | Pending |
+| DRAW-06 | Phase 3 | Complete |
+| DRAW-07 | Phase 3 | Complete |
 | EXPORT-01 | Phase 4 | Pending |
 | EXPORT-02 | Phase 4 | Pending |
 | EXPORT-03 | Phase 4 | Pending |
