@@ -47,7 +47,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Calibration types, Zustand slice, two-click interaction, modal dialog, toolbar button, toast warning
+- [x] 02-01-PLAN.md — Calibration types, Zustand slice, two-click interaction, modal dialog, toolbar button, toast warning
 - [ ] 02-02-PLAN.md — Ruler overlay with auto-scaling ticks, human verification of full calibration flow
 
 **UI hint**: yes

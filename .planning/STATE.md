@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 01-foundation-and-photo-display-01-02-PLAN.md
-last_updated: "2026-03-28T21:37:38.174Z"
+status: executing
+stopped_at: Completed 02-scale-calibration-02-01-PLAN.md
+last_updated: "2026-03-28T22:05:10.415Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 4
+  completed_plans: 3
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Accurately trace and scale a photographed shape into a clean DXF file that can be cut on a CNC without further cleanup.
-**Current focus:** Phase 01 — foundation-and-photo-display
+**Current focus:** Phase 02 — scale-calibration
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 02 (scale-calibration) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0%
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01-foundation-and-photo-display P01 | 3 | 3 tasks | 11 files |
 | Phase 01-foundation-and-photo-display P02 | 2min | 3 tasks | 6 files |
+| Phase 02-scale-calibration P01 | 2min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation-and-photo-display]: Zustand setViewport accepts Partial<Viewport> to allow partial updates at call sites
 - [Phase 01-foundation-and-photo-display]: useAppStore.getState() used inside Konva event handlers to prevent stale closure captures
 - [Phase 01-foundation-and-photo-display]: Viewport useEffect in CanvasStage syncs Konva Stage transform enabling contain-fit repositioning after photo load
+- [Phase 02-scale-calibration]: CalibrationClickState (transient) kept separate from CalibrationState (persistent) so prior pxPerMm survives re-calibration flow
+- [Phase 02-scale-calibration]: setToolMode guard uses mode !== 'select' && mode !== 'calibrate' — forward-compatible with Phase 3 drawing tools without further changes
+- [Phase 02-scale-calibration]: cancelCalibration preserves existing calibration result so ruler overlay remains visible during re-calibration attempt
 
 ### Pending Todos
 
@@ -82,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28T21:32:43.846Z
-Stopped at: Completed 01-foundation-and-photo-display-01-02-PLAN.md
+Last session: 2026-03-28T22:05:10.413Z
+Stopped at: Completed 02-scale-calibration-02-01-PLAN.md
 Resume file: None
