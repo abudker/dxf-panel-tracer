@@ -49,14 +49,14 @@ Exceptions:
 
 ## Typography
 
-| Role | Size | Weight | Line Height |
-|------|------|--------|-------------|
-| Body / toolbar label | 14px | 400 (regular) | 1.5 |
-| UI label / badge | 12px | 500 (medium) | 1.4 |
-| Drop-zone heading | 20px | 600 (semibold) | 1.2 |
-| Drop-zone subtext | 14px | 400 (regular) | 1.5 |
+| Role | Size | Weight | Line Height | Additional Treatment |
+|------|------|--------|-------------|----------------------|
+| Body / toolbar label | 14px | 400 (regular) | 1.5 | — |
+| UI label / badge | 12px | 400 (regular) | 1.4 | `text-transform: uppercase`, `letter-spacing: 0.05em` |
+| Drop-zone heading | 20px | 600 (semibold) | 1.2 | — |
+| Drop-zone subtext | 14px | 400 (regular) | 1.5 | — |
 
-**Note:** Only 3 distinct sizes are used (12, 14, 20). Heading weight (600) and body weight (400) are the two declared weights. Medium (500) is used only for uppercase badge labels — not a third structural weight.
+**Declared weights: 2.** Weight 400 (regular) — body, toolbar label, badge, drop-zone subtext. Weight 600 (semibold) — drop-zone heading. Badge labels achieve visual differentiation from body text through uppercase transform and letter-spacing, not a distinct weight.
 
 ---
 
@@ -81,6 +81,16 @@ Accent reserved for:
 - File picker `<input>` trigger button
 
 Accent is NOT used on: toolbar icon buttons at rest, canvas elements, status text.
+
+---
+
+## Focal Point
+
+**Primary screen (empty state / drop-zone overlay):**
+
+Primary visual anchor: drop-zone heading — "Upload a photo to start" — rendered at 20px / weight 600 / color #f5f5f5, centered in the viewport. It is the largest, heaviest text element on screen and the first element the eye lands on before a photo is loaded.
+
+All other empty-state elements (subtext, dashed border) are visually subordinate to this heading by size, weight, and color contrast.
 
 ---
 
