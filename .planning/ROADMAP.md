@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md — Project scaffold, types, Zustand store, coordinate utilities, app shell with toolbar
-- [ ] 01-02-PLAN.md — Photo upload with EXIF correction, Konva canvas with pan/zoom, drop-zone overlay
+- [x] 01-02-PLAN.md — Photo upload with EXIF correction, Konva canvas with pan/zoom, drop-zone overlay
 
 **UI hint**: yes
 

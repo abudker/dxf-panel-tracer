@@ -18,8 +18,8 @@
 ### Photo & Calibration
 
 - [x] **PHOTO-01**: User can upload a photo and display it as the canvas background
-- [ ] **PHOTO-02**: User can pan the canvas by dragging
-- [ ] **PHOTO-03**: User can zoom in/out with scroll wheel
+- [x] **PHOTO-02**: User can pan the canvas by dragging
+- [x] **PHOTO-03**: User can zoom in/out with scroll wheel
 - [ ] **PHOTO-04**: User can set scale by clicking two points and entering the real-world distance
 - [ ] **PHOTO-05**: A visual ruler overlay shows real-world units after calibration
 - [ ] **PHOTO-06**: User is warned if they attempt to draw before setting a scale reference
@@ -61,8 +61,8 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | PHOTO-01 | Phase 1 | Complete |
-| PHOTO-02 | Phase 1 | Pending |
-| PHOTO-03 | Phase 1 | Pending |
+| PHOTO-02 | Phase 1 | Complete |
+| PHOTO-03 | Phase 1 | Complete |
 | PHOTO-04 | Phase 2 | Pending |
 | PHOTO-05 | Phase 2 | Pending |
 | PHOTO-06 | Phase 2 | Pending |

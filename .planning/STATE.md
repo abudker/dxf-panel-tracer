@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 01-foundation-and-photo-display-01-01-PLAN.md
-last_updated: "2026-03-28T21:28:24.564Z"
+status: verifying
+stopped_at: Completed 01-foundation-and-photo-display-01-02-PLAN.md
+last_updated: "2026-03-28T21:32:43.848Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 Phase: 01 (foundation-and-photo-display) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0%
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01-foundation-and-photo-display P01 | 3 | 3 tasks | 11 files |
+| Phase 01-foundation-and-photo-display P02 | 2min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation-and-photo-display]: Tailwind v4 configured with @import tailwindcss — no config file, no @tailwind directives
 - [Phase 01-foundation-and-photo-display]: Named component exports (export function X) used throughout — consistent with plan spec
 - [Phase 01-foundation-and-photo-display]: Zustand setViewport accepts Partial<Viewport> to allow partial updates at call sites
+- [Phase 01-foundation-and-photo-display]: useAppStore.getState() used inside Konva event handlers to prevent stale closure captures
+- [Phase 01-foundation-and-photo-display]: Viewport useEffect in CanvasStage syncs Konva Stage transform enabling contain-fit repositioning after photo load
 
 ### Pending Todos
 
@@ -79,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28T21:28:24.563Z
-Stopped at: Completed 01-foundation-and-photo-display-01-01-PLAN.md
+Last session: 2026-03-28T21:32:43.846Z
+Stopped at: Completed 01-foundation-and-photo-display-01-02-PLAN.md
 Resume file: None
