@@ -28,7 +28,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. User can pan the canvas by clicking and dragging
   3. User can zoom in and out with the scroll wheel and the image stays anchored to the cursor position
   4. A high-resolution phone photo displays without orientation errors (EXIF rotation applied correctly)
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Project scaffold, types, Zustand store, coordinate utilities, app shell with toolbar
+- [ ] 01-02-PLAN.md — Photo upload with EXIF correction, Konva canvas with pan/zoom, drop-zone overlay
+
 **UI hint**: yes
 
 ### Phase 2: Scale Calibration
@@ -74,7 +79,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Photo Display | 0/? | Not started | - |
+| 1. Foundation and Photo Display | 0/2 | Planning complete | - |
 | 2. Scale Calibration | 0/? | Not started | - |
 | 3. Drawing Tools | 0/? | Not started | - |
 | 4. DXF Export and Polish | 0/? | Not started | - |
