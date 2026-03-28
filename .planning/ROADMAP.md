@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Foundation and Photo Display** - Project scaffold, coordinate math, document model, photo upload, pan/zoom
 - [ ] **Phase 2: Scale Calibration** - Two-point calibration tool, visual ruler overlay, pre-draw warning
-- [ ] **Phase 3: Drawing Tools** - Line, arc, endpoint snap, select, delete, undo, redo
+- [x] **Phase 3: Drawing Tools** - Line, arc, endpoint snap, select, delete, undo, redo (completed 2026-03-28)
 - [ ] **Phase 4: DXF Export and Polish** - DXF export with LINE/ARC entities, closure warning, sensible filename
 
 ## Phase Details
@@ -66,7 +66,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — Types, geometry utilities, Zustand store extension with segments/undo/redo
-- [ ] 03-02-PLAN.md — DrawingLayer rendering, CanvasStage click routing, Toolbar buttons, keyboard shortcuts
+- [x] 03-02-PLAN.md — DrawingLayer rendering, CanvasStage click routing, Toolbar buttons, keyboard shortcuts
 
 **UI hint**: yes
 
@@ -91,5 +91,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation and Photo Display | 2/2 | Planning complete | - |
 | 2. Scale Calibration | 0/2 | Planning complete | - |
-| 3. Drawing Tools | 0/2 | Planning complete | - |
+| 3. Drawing Tools | 2/2 | Complete   | 2026-03-28 |
 | 4. DXF Export and Polish | 0/? | Not started | - |

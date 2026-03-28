@@ -10,8 +10,8 @@
 - [x] **DRAW-01**: User can draw straight lines by clicking start and end points
 - [x] **DRAW-02**: User can draw arcs by clicking start point, end point, and a point on the arc
 - [x] **DRAW-03**: Endpoints snap to nearby existing endpoints within a threshold
-- [ ] **DRAW-04**: User can select a segment by clicking it
-- [ ] **DRAW-05**: User can delete a selected segment
+- [x] **DRAW-04**: User can select a segment by clicking it
+- [x] **DRAW-05**: User can delete a selected segment
 - [x] **DRAW-06**: User can undo the last action
 - [x] **DRAW-07**: User can redo an undone action
 
@@ -69,8 +69,8 @@
 | DRAW-01 | Phase 3 | Complete |
 | DRAW-02 | Phase 3 | Complete |
 | DRAW-03 | Phase 3 | Complete |
-| DRAW-04 | Phase 3 | Pending |
-| DRAW-05 | Phase 3 | Pending |
+| DRAW-04 | Phase 3 | Complete |
+| DRAW-05 | Phase 3 | Complete |
 | DRAW-06 | Phase 3 | Complete |
 | DRAW-07 | Phase 3 | Complete |
 | EXPORT-01 | Phase 4 | Pending |
