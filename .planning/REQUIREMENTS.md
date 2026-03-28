@@ -17,7 +17,7 @@
 
 ### Photo & Calibration
 
-- [ ] **PHOTO-01**: User can upload a photo and display it as the canvas background
+- [x] **PHOTO-01**: User can upload a photo and display it as the canvas background
 - [ ] **PHOTO-02**: User can pan the canvas by dragging
 - [ ] **PHOTO-03**: User can zoom in/out with scroll wheel
 - [ ] **PHOTO-04**: User can set scale by clicking two points and entering the real-world distance
@@ -60,7 +60,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PHOTO-01 | Phase 1 | Pending |
+| PHOTO-01 | Phase 1 | Complete |
 | PHOTO-02 | Phase 1 | Pending |
 | PHOTO-03 | Phase 1 | Pending |
 | PHOTO-04 | Phase 2 | Pending |

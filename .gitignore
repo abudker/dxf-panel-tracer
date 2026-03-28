@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# GSD tooling (not part of app)
+.claude/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
