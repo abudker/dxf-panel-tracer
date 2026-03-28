@@ -60,28 +60,28 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DRAW-01 | — | Pending |
-| DRAW-02 | — | Pending |
-| DRAW-03 | — | Pending |
-| DRAW-04 | — | Pending |
-| DRAW-05 | — | Pending |
-| DRAW-06 | — | Pending |
-| DRAW-07 | — | Pending |
-| PHOTO-01 | — | Pending |
-| PHOTO-02 | — | Pending |
-| PHOTO-03 | — | Pending |
-| PHOTO-04 | — | Pending |
-| PHOTO-05 | — | Pending |
-| PHOTO-06 | — | Pending |
-| EXPORT-01 | — | Pending |
-| EXPORT-02 | — | Pending |
-| EXPORT-03 | — | Pending |
+| PHOTO-01 | Phase 1 | Pending |
+| PHOTO-02 | Phase 1 | Pending |
+| PHOTO-03 | Phase 1 | Pending |
+| PHOTO-04 | Phase 2 | Pending |
+| PHOTO-05 | Phase 2 | Pending |
+| PHOTO-06 | Phase 2 | Pending |
+| DRAW-01 | Phase 3 | Pending |
+| DRAW-02 | Phase 3 | Pending |
+| DRAW-03 | Phase 3 | Pending |
+| DRAW-04 | Phase 3 | Pending |
+| DRAW-05 | Phase 3 | Pending |
+| DRAW-06 | Phase 3 | Pending |
+| DRAW-07 | Phase 3 | Pending |
+| EXPORT-01 | Phase 4 | Pending |
+| EXPORT-02 | Phase 4 | Pending |
+| EXPORT-03 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 0
-- Unmapped: 16 ⚠️
+- Mapped to phases: 16
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-28*
-*Last updated: 2026-03-28 after initial definition*
+*Last updated: 2026-03-28 after roadmap creation*
