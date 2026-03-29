@@ -4,11 +4,6 @@ import type { Segment, CalibrationUnit, GapAnalysis, GapInfo } from '../types';
 // Private helpers
 // ============================================================
 
-/** Normalize degrees to [0, 360). */
-function normDeg(d: number): number {
-  return ((d % 360) + 360) % 360;
-}
-
 /** Convert world pixels to real-world units (mm or inches). */
 function toRealUnits(worldPx: number, pxPerMm: number, unit: CalibrationUnit): number {
   const mm = worldPx / pxPerMm;
@@ -107,100 +102,123 @@ export function analyzeGaps(
 }
 
 /**
+ * Compute the LWPOLYLINE bulge value for an arc segment.
+ *
+ * Bulge = tan(included_angle / 4).
+ * Positive = arc bulges left (CCW), negative = right (CW).
+ *
+ * After Y-flip: canvas anticlockwise becomes CW in DXF space (negative bulge),
+ * canvas clockwise becomes CCW in DXF space (positive bulge).
+ */
+function computeBulge(seg: Segment): number {
+  if (seg.type === 'line') return 0;
+
+  // After Y-flip, directions are reversed
+  const dxfCCW = !seg.anticlockwise;
+
+  // Compute DXF-space angles (negated for Y-flip)
+  const flippedStart = -seg.startAngle;
+  const flippedEnd = -seg.endAngle;
+
+  // Compute sweep angle (always positive magnitude)
+  let sweep: number;
+  if (dxfCCW) {
+    sweep = flippedEnd - flippedStart;
+    if (sweep <= 0) sweep += 2 * Math.PI;
+  } else {
+    sweep = flippedStart - flippedEnd;
+    if (sweep <= 0) sweep += 2 * Math.PI;
+  }
+
+  const bulge = Math.tan(sweep / 4);
+  return dxfCCW ? bulge : -bulge;
+}
+
+/**
  * Build a DXF string from an ordered list of segments.
+ *
+ * Uses a single LWPOLYLINE entity with bulge values for arcs.
+ * This guarantees endpoint continuity — no floating-point gaps between
+ * entities that cause "open vectors" warnings in CNC software.
  *
  * Applies:
  * - Y-axis flip (canvas Y-down → DXF Y-up): negate all Y values
  * - Origin normalization: translate so minimum X/Y is at (0, 0)
- *   Arc bounding boxes include center ± radius (not just center point)
  * - Unit scaling: worldPx / pxPerMm [/ 25.4 for inches]
- * - Arc angle conversion: radians → degrees, negate (Y-flip), normalize [0,360)
- *   Swap start/end when anticlockwise=true (canvas CCW → CW after Y-flip → swap restores CCW for DXF)
+ * - Arc bulge computation with direction handling
  */
 export function buildDxfString(
   segments: Segment[],
   pxPerMm: number,
   unit: CalibrationUnit
 ): string {
+  if (segments.length === 0) return '0\nEOF\n';
+
   const insunits = unit === 'in' ? 1 : 4;
 
   // ----------------------------------------------------------
-  // Step 1: Collect all flipped coordinates for bounding box
+  // Step 1: Collect vertex positions (start of each segment)
   // ----------------------------------------------------------
-  const allX: number[] = [];
-  const allY: number[] = []; // already Y-flipped (negated)
+  const vertices: { x: number; y: number; bulge: number }[] = [];
 
   for (const seg of segments) {
-    if (seg.type === 'line') {
-      allX.push(seg.start.x, seg.end.x);
-      allY.push(-seg.start.y, -seg.end.y);
-    } else {
-      // Arc: bounding box must include center ± radius to handle arcs near edges
+    const start = getSegStart(seg);
+    vertices.push({
+      x: start.x,
+      y: -start.y, // Y-flip
+      bulge: computeBulge(seg),
+    });
+  }
+
+  // ----------------------------------------------------------
+  // Step 2: Origin normalization
+  // ----------------------------------------------------------
+  // Include all segment start AND end points, plus arc center ± radius
+  const allX: number[] = vertices.map((v) => v.x);
+  const allY: number[] = vertices.map((v) => v.y);
+  for (const seg of segments) {
+    const end = getSegEnd(seg);
+    allX.push(end.x);
+    allY.push(-end.y);
+    if (seg.type === 'arc') {
       allX.push(seg.center.x - seg.radius, seg.center.x + seg.radius);
       const flippedCy = -seg.center.y;
       allY.push(flippedCy - seg.radius, flippedCy + seg.radius);
     }
   }
-
-  const minX = allX.length > 0 ? Math.min(...allX) : 0;
-  const minY = allY.length > 0 ? Math.min(...allY) : 0;
+  const minX = Math.min(...allX);
+  const minY = Math.min(...allY);
 
   // ----------------------------------------------------------
-  // Step 2: Build DXF content line-by-line
+  // Step 3: Check closure
+  // ----------------------------------------------------------
+  const closed = isShapeClosed(segments);
+
+  // ----------------------------------------------------------
+  // Step 4: Build DXF content
   // ----------------------------------------------------------
   const lines: string[] = [];
 
   // HEADER section
   lines.push('0', 'SECTION', '2', 'HEADER');
-  lines.push('9', '$ACADVER', '1', 'AC1009');
+  lines.push('9', '$ACADVER', '1', 'AC1015');
   lines.push('9', '$INSUNITS', '70', String(insunits));
   lines.push('0', 'ENDSEC');
 
-  // ENTITIES section
+  // ENTITIES section — single LWPOLYLINE
   lines.push('0', 'SECTION', '2', 'ENTITIES');
+  lines.push('0', 'LWPOLYLINE');
+  lines.push('8', '0');                              // layer 0
+  lines.push('90', String(vertices.length));          // vertex count
+  lines.push('70', closed ? '1' : '0');               // 1 = closed
 
-  for (const seg of segments) {
-    if (seg.type === 'line') {
-      const x1 = toRealUnits(seg.start.x - minX, pxPerMm, unit);
-      const y1 = toRealUnits(-seg.start.y - minY, pxPerMm, unit);
-      const x2 = toRealUnits(seg.end.x - minX, pxPerMm, unit);
-      const y2 = toRealUnits(-seg.end.y - minY, pxPerMm, unit);
-
-      lines.push('0', 'LINE');
-      lines.push('8', '0');        // layer 0
-      lines.push('10', fmt(x1));
-      lines.push('20', fmt(y1));
-      lines.push('30', '0.000000');
-      lines.push('11', fmt(x2));
-      lines.push('21', fmt(y2));
-      lines.push('31', '0.000000');
-    } else {
-      // Arc
-      const cx = toRealUnits(seg.center.x - minX, pxPerMm, unit);
-      const cy = toRealUnits(-seg.center.y - minY, pxPerMm, unit);
-      const radius = toRealUnits(seg.radius, pxPerMm, unit);
-
-      // Angle conversion:
-      // 1. Negate angles (Y-flip reverses angle direction)
-      // 2. Convert radians to degrees
-      // 3. Normalize to [0, 360)
-      let startDeg = normDeg(-seg.startAngle * (180 / Math.PI));
-      let endDeg   = normDeg(-seg.endAngle   * (180 / Math.PI));
-
-      // 4. If canvas arc was anticlockwise=true (CCW in screen), after Y-flip it becomes CW.
-      //    Swap start/end so DXF sweeps CCW over the correct arc.
-      if (seg.anticlockwise) {
-        [startDeg, endDeg] = [endDeg, startDeg];
-      }
-
-      lines.push('0', 'ARC');
-      lines.push('8', '0');        // layer 0
-      lines.push('10', fmt(cx));
-      lines.push('20', fmt(cy));
-      lines.push('30', '0.000000');
-      lines.push('40', fmt(radius));
-      lines.push('50', fmt(startDeg));
-      lines.push('51', fmt(endDeg));
+  for (const v of vertices) {
+    const x = toRealUnits(v.x - minX, pxPerMm, unit);
+    const y = toRealUnits(v.y - minY, pxPerMm, unit);
+    lines.push('10', fmt(x));
+    lines.push('20', fmt(y));
+    if (v.bulge !== 0) {
+      lines.push('42', fmt(v.bulge));
     }
   }
 
