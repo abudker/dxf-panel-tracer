@@ -1,4 +1,4 @@
-import { Crosshair, Minus, Spline, MousePointer } from 'lucide-react';
+import { Crosshair, Minus, Spline, MousePointer, Download } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { UploadButton } from './UploadButton';
 
@@ -9,6 +9,7 @@ interface ToolbarProps {
 export function Toolbar({ onFileSelect }: ToolbarProps) {
   const toolMode = useAppStore((s) => s.toolMode);
   const calibration = useAppStore((s) => s.calibration);
+  const segments = useAppStore((s) => s.segments);
 
   const isCalibrateActive = toolMode === 'calibrate';
   const isLineActive = toolMode === 'line';
@@ -16,6 +17,7 @@ export function Toolbar({ onFileSelect }: ToolbarProps) {
   const isSelectActive = toolMode === 'select';
 
   const isCalibrated = calibration !== null;
+  const hasSegments = segments.length > 0 && calibration !== null;
 
   return (
     <div className="fixed top-[16px] left-[16px] z-50 flex items-center bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg px-[8px] py-[4px]">
@@ -74,6 +76,20 @@ export function Toolbar({ onFileSelect }: ToolbarProps) {
         }`}
       >
         <MousePointer size={18} />
+      </button>
+      <div className="w-px h-[24px] bg-[#3a3a3a] mx-[4px]" />
+      <button
+        type="button"
+        title="Export DXF"
+        onClick={() => hasSegments ? useAppStore.getState().triggerExport() : undefined}
+        className={`h-[36px] flex items-center gap-[4px] px-[8px] rounded-md transition-colors ${
+          hasSegments
+            ? 'hover:bg-[#3a3a3a] text-[#22c55e]'
+            : 'opacity-40 cursor-not-allowed text-[#999]'
+        }`}
+      >
+        <Download size={18} />
+        <span className="text-[12px] font-medium">Export</span>
       </button>
     </div>
   );

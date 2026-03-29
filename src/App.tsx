@@ -3,6 +3,7 @@ import { Toolbar } from './components/Toolbar';
 import { CanvasStage } from './components/CanvasStage';
 import { DropZoneOverlay } from './components/DropZoneOverlay';
 import { CalibrationModal } from './components/CalibrationModal';
+import { ClosureWarningModal } from './components/ClosureWarningModal';
 import { Toast } from './components/Toast';
 import { RulerOverlay } from './components/RulerOverlay';
 import { usePhotoUpload } from './hooks/usePhotoUpload';
@@ -23,6 +24,7 @@ function App() {
     <div className="w-screen h-screen bg-[#1a1a1a] relative overflow-hidden">
       <Toolbar onFileSelect={onFileSelect} />
       <CalibrationModal />
+      <ClosureWarningModal />
       <Toast />
       {photoUrl ? (
         <CanvasStage />

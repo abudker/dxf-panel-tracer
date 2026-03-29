@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Viewport, ToolMode, Point, CalibrationState, CalibrationClickState, CalibrationUnit, Segment, DrawingState } from '../types';
 import { circumcircle, arcDirectionFromThreePoints } from '../utils/geometry';
+import { buildDxfString, isShapeClosed, downloadDxf, generateDxfFilename } from '../utils/dxfExport';
 
 interface AppState {
   // Photo
@@ -54,6 +55,14 @@ interface AppState {
   clearDrawing: () => void;
   undoDraw: () => void;
   redoDraw: () => void;
+
+  // Export state
+  closureWarningOpen: boolean;
+
+  // Export actions
+  triggerExport: () => void;
+  confirmExport: () => void;
+  dismissExport: () => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -251,5 +260,34 @@ export const useAppStore = create<AppState>((set, get) => ({
       drawFuture: drawFuture.slice(1),
       selectedSegmentId: null,
     });
+  },
+
+  // Export state
+  closureWarningOpen: false,
+
+  triggerExport: () => {
+    const { segments, calibration } = get();
+    if (segments.length === 0 || !calibration) return;
+
+    if (isShapeClosed(segments)) {
+      // Shape is closed — export immediately
+      const dxf = buildDxfString(segments, calibration.pxPerMm, calibration.unit);
+      downloadDxf(dxf, generateDxfFilename());
+    } else {
+      // Shape is not closed — show warning modal
+      set({ closureWarningOpen: true });
+    }
+  },
+
+  confirmExport: () => {
+    const { segments, calibration } = get();
+    if (segments.length === 0 || !calibration) return;
+    set({ closureWarningOpen: false });
+    const dxf = buildDxfString(segments, calibration.pxPerMm, calibration.unit);
+    downloadDxf(dxf, generateDxfFilename());
+  },
+
+  dismissExport: () => {
+    set({ closureWarningOpen: false });
   },
 }));
