@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import type { Viewport, ToolMode, Point, CalibrationState, CalibrationClickState, CalibrationUnit, Segment, DrawingState } from '../types';
+import type { Viewport, ToolMode, Point, CalibrationState, CalibrationClickState, CalibrationUnit, Segment, DrawingState, GapAnalysis } from '../types';
 import { circumcircle, arcDirectionFromThreePoints } from '../utils/geometry';
-import { buildDxfString, isShapeClosed, downloadDxf, generateDxfFilename } from '../utils/dxfExport';
+import { buildDxfString, isShapeClosed, downloadDxf, generateDxfFilename, analyzeGaps } from '../utils/dxfExport';
 
 interface AppState {
   // Photo
@@ -58,10 +58,12 @@ interface AppState {
 
   // Export state
   closureWarningOpen: boolean;
+  gapAnalysis: GapAnalysis | null;
 
   // Export actions
   triggerExport: () => void;
   confirmExport: () => void;
+  autoCloseAndExport: () => void;
   dismissExport: () => void;
 }
 
@@ -264,6 +266,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // Export state
   closureWarningOpen: false,
+  gapAnalysis: null,
 
   triggerExport: () => {
     const { segments, calibration } = get();
@@ -274,20 +277,70 @@ export const useAppStore = create<AppState>((set, get) => ({
       const dxf = buildDxfString(segments, calibration.pxPerMm, calibration.unit);
       downloadDxf(dxf, generateDxfFilename());
     } else {
-      // Shape is not closed — show warning modal
-      set({ closureWarningOpen: true });
+      // Shape is not closed — analyze gaps and show warning modal
+      const analysis = analyzeGaps(segments, calibration.pxPerMm, calibration.unit);
+      set({ closureWarningOpen: true, gapAnalysis: analysis });
     }
   },
 
   confirmExport: () => {
     const { segments, calibration } = get();
     if (segments.length === 0 || !calibration) return;
-    set({ closureWarningOpen: false });
+    set({ closureWarningOpen: false, gapAnalysis: null });
     const dxf = buildDxfString(segments, calibration.pxPerMm, calibration.unit);
     downloadDxf(dxf, generateDxfFilename());
   },
 
+  autoCloseAndExport: () => {
+    const { segments, calibration, drawHistory } = get();
+    if (segments.length < 2 || !calibration) return;
+
+    // Snapshot current state for undo
+    const newHistory = [...drawHistory, segments].slice(-50);
+
+    // Deep-clone segments so we can mutate endpoints
+    const closed: Segment[] = segments.map((seg) =>
+      seg.type === 'line'
+        ? { ...seg, start: { ...seg.start }, end: { ...seg.end } }
+        : { ...seg, center: { ...seg.center }, p1: { ...seg.p1 }, p2: { ...seg.p2 }, p3: { ...seg.p3 } }
+    );
+
+    // Close consecutive gaps: set each segment's start to previous segment's end
+    for (let i = 1; i < closed.length; i++) {
+      const prev = closed[i - 1];
+      const prevEnd = prev.type === 'line' ? prev.end : prev.p2;
+      const cur = closed[i];
+      if (cur.type === 'line') {
+        cur.start = { ...prevEnd };
+      } else {
+        cur.p1 = { ...prevEnd };
+      }
+    }
+
+    // Close the final gap: set last segment's end to first segment's start
+    const first = closed[0];
+    const firstStart = first.type === 'line' ? first.start : first.p1;
+    const last = closed[closed.length - 1];
+    if (last.type === 'line') {
+      last.end = { ...firstStart };
+    } else {
+      last.p2 = { ...firstStart };
+    }
+
+    // Update state with closed segments, then export
+    set({
+      segments: closed,
+      drawHistory: newHistory,
+      drawFuture: [],
+      closureWarningOpen: false,
+      gapAnalysis: null,
+    });
+
+    const dxf = buildDxfString(closed, calibration.pxPerMm, calibration.unit);
+    downloadDxf(dxf, generateDxfFilename());
+  },
+
   dismissExport: () => {
-    set({ closureWarningOpen: false });
+    set({ closureWarningOpen: false, gapAnalysis: null });
   },
 }));

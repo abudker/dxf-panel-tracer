@@ -1,4 +1,4 @@
-import type { Segment, CalibrationUnit } from '../types';
+import type { Segment, CalibrationUnit, GapAnalysis, GapInfo } from '../types';
 
 // ============================================================
 // Private helpers
@@ -49,6 +49,61 @@ export function isShapeClosed(segments: Segment[], tolerancePx = 0.5): boolean {
   const dx = p1.x - p2.x;
   const dy = p1.y - p2.y;
   return Math.sqrt(dx * dx + dy * dy) <= tolerancePx;
+}
+
+/**
+ * Analyze gaps between consecutive segment endpoints and the closure gap
+ * (last endpoint → first endpoint). Returns gap distances and the max
+ * adjustment needed to auto-close the shape.
+ */
+export function analyzeGaps(
+  segments: Segment[],
+  pxPerMm: number,
+  unit: CalibrationUnit
+): GapAnalysis {
+  if (segments.length === 0) {
+    return { gaps: [], maxGap: 0, maxGapReal: 0, unit, canAutoClose: false };
+  }
+
+  const gaps: GapInfo[] = [];
+
+  // Check consecutive segment connections
+  for (let i = 0; i < segments.length - 1; i++) {
+    const endPt = getSegEnd(segments[i]);
+    const startPt = getSegStart(segments[i + 1]);
+    const dx = endPt.x - startPt.x;
+    const dy = endPt.y - startPt.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > 0.5) {
+      gaps.push({ fromSegmentIndex: i, toSegmentIndex: i + 1, distance: dist });
+    }
+  }
+
+  // Check closure gap (last endpoint → first endpoint)
+  const lastEnd = getSegEnd(segments[segments.length - 1]);
+  const firstStart = getSegStart(segments[0]);
+  const cdx = lastEnd.x - firstStart.x;
+  const cdy = lastEnd.y - firstStart.y;
+  const closureDist = Math.sqrt(cdx * cdx + cdy * cdy);
+  if (closureDist > 0.5) {
+    gaps.push({
+      fromSegmentIndex: segments.length - 1,
+      toSegmentIndex: 0,
+      distance: closureDist,
+    });
+  }
+
+  const maxGap = gaps.reduce((max, g) => Math.max(max, g.distance), 0);
+  const maxGapMm = maxGap / pxPerMm;
+  const maxGapReal = unit === 'in' ? maxGapMm / 25.4 : maxGapMm;
+
+  return {
+    gaps,
+    maxGap,
+    maxGapReal,
+    unit,
+    canAutoClose: maxGap > 0 && maxGap < 50, // auto-close if gaps < 50 world px
+  };
 }
 
 /**

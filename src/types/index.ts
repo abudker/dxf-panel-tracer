@@ -47,6 +47,21 @@ export interface DrawingState {
   cursorWorld: Point | null;  // current cursor in world coords for ghost preview
 }
 
+/** Analysis of gaps between segment endpoints for closure assistance */
+export interface GapInfo {
+  fromSegmentIndex: number;
+  toSegmentIndex: number;
+  distance: number;  // world pixels
+}
+
+export interface GapAnalysis {
+  gaps: GapInfo[];
+  maxGap: number;       // largest gap in world pixels
+  maxGapReal: number;   // largest gap in real-world units (mm or inches)
+  unit: CalibrationUnit;
+  canAutoClose: boolean; // true if gaps are small enough to nudge
+}
+
 /** Unit used for the real-world calibration distance */
 export type CalibrationUnit = 'mm' | 'in';
 
