@@ -26,9 +26,9 @@
 
 ### Export
 
-- [ ] **EXPORT-01**: User can export traced shape as a DXF file with LINE and ARC entities at real-world dimensions
-- [ ] **EXPORT-02**: User is warned if the shape is not closed before export
-- [ ] **EXPORT-03**: Exported file has a sensible default filename (e.g., panel-trace-2026-03-28.dxf)
+- [x] **EXPORT-01**: User can export traced shape as a DXF file with LINE and ARC entities at real-world dimensions
+- [x] **EXPORT-02**: User is warned if the shape is not closed before export
+- [x] **EXPORT-03**: Exported file has a sensible default filename (e.g., panel-trace-2026-03-28.dxf)
 
 ## v2 Requirements
 
@@ -73,9 +73,9 @@
 | DRAW-05 | Phase 3 | Complete |
 | DRAW-06 | Phase 3 | Complete |
 | DRAW-07 | Phase 3 | Complete |
-| EXPORT-01 | Phase 4 | Pending |
-| EXPORT-02 | Phase 4 | Pending |
-| EXPORT-03 | Phase 4 | Pending |
+| EXPORT-01 | Phase 4 | Complete |
+| EXPORT-02 | Phase 4 | Complete |
+| EXPORT-03 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 16 total

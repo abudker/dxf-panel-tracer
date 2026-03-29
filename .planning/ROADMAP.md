@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: Foundation and Photo Display** - Project scaffold, coordinate math, document model, photo upload, pan/zoom
 - [ ] **Phase 2: Scale Calibration** - Two-point calibration tool, visual ruler overlay, pre-draw warning
 - [x] **Phase 3: Drawing Tools** - Line, arc, endpoint snap, select, delete, undo, redo (completed 2026-03-28)
-- [ ] **Phase 4: DXF Export and Polish** - DXF export with LINE/ARC entities, closure warning, sensible filename
+- [x] **Phase 4: DXF Export and Polish** - DXF export with LINE/ARC entities, closure warning, sensible filename (completed 2026-03-29)
 
 ## Phase Details
 
@@ -84,7 +84,7 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — TDD: Pure DXF export utility (buildDxfString, isShapeClosed, downloadDxf) with Vitest
-- [ ] 04-02-PLAN.md — Export button in Toolbar, ClosureWarningModal, store wiring, human verification
+- [x] 04-02-PLAN.md — Export button in Toolbar, ClosureWarningModal, store wiring, human verification
 
 **UI hint**: yes
 
@@ -98,4 +98,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Foundation and Photo Display | 2/2 | Planning complete | - |
 | 2. Scale Calibration | 0/2 | Planning complete | - |
 | 3. Drawing Tools | 2/2 | Complete   | 2026-03-28 |
-| 4. DXF Export and Polish | 0/2 | Planning complete | - |
+| 4. DXF Export and Polish | 2/2 | Complete   | 2026-03-29 |
