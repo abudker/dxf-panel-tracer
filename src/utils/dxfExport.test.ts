@@ -109,14 +109,14 @@ describe('buildDxfString - DXF structure', () => {
   it('sets $INSUNITS to 4 for mm', () => {
     const dxf = buildDxfString([singleLine], 1, 'mm');
     expect(dxf).toContain('$INSUNITS');
-    // group code 70 then value 4
-    expect(dxf).toMatch(/\$INSUNITS\n9[^0-9]*70\n4/);
+    // group code 70 then value 4 (format: $INSUNITS\n70\n4)
+    expect(dxf).toMatch(/\$INSUNITS\n70\n4/);
   });
 
   it('sets $INSUNITS to 1 for inches', () => {
     const dxf = buildDxfString([singleLine], 1, 'in');
     expect(dxf).toContain('$INSUNITS');
-    expect(dxf).toMatch(/\$INSUNITS\n9[^0-9]*70\n1/);
+    expect(dxf).toMatch(/\$INSUNITS\n70\n1/);
   });
 });
 
@@ -318,34 +318,34 @@ describe('generateDxfFilename', () => {
 });
 
 // ============================================================
-// downloadDxf
+// downloadDxf (structural/mock tests — no DOM needed)
 // ============================================================
 
 describe('downloadDxf', () => {
   let mockCreateObjectURL: ReturnType<typeof vi.fn>;
   let mockRevokeObjectURL: ReturnType<typeof vi.fn>;
   let mockClick: ReturnType<typeof vi.fn>;
-  let appendChildSpy: ReturnType<typeof vi.spyOn>;
-  let removeChildSpy: ReturnType<typeof vi.spyOn>;
-  let createElementSpy: ReturnType<typeof vi.spyOn>;
+  let mockAnchor: { href: string; download: string; click: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     mockCreateObjectURL = vi.fn().mockReturnValue('blob:mock-url');
     mockRevokeObjectURL = vi.fn();
     mockClick = vi.fn();
+    mockAnchor = { href: '', download: '', click: mockClick };
 
+    // Set up URL mock
     globalThis.URL = {
       createObjectURL: mockCreateObjectURL,
       revokeObjectURL: mockRevokeObjectURL,
     } as unknown as typeof URL;
 
-    // Mock document.createElement to intercept anchor creation
-    createElementSpy = vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
-      if (tag === 'a') {
-        return { href: '', download: '', click: mockClick } as unknown as HTMLElement;
-      }
-      return document.createElement(tag);
-    });
+    // Set up document mock in node environment
+    globalThis.document = {
+      createElement: vi.fn().mockImplementation((tag: string) => {
+        if (tag === 'a') return mockAnchor;
+        return { href: '', download: '', click: vi.fn() };
+      }),
+    } as unknown as Document;
   });
 
   afterEach(() => {
@@ -353,7 +353,7 @@ describe('downloadDxf', () => {
   });
 
   it('creates a Blob with type application/dxf', () => {
-    const BlobSpy = vi.spyOn(globalThis, 'Blob').mockImplementation(function(content, options) {
+    const BlobSpy = vi.spyOn(globalThis, 'Blob').mockImplementation(function(this: Blob, _content: BlobPart[], options?: BlobPropertyBag) {
       return new (class MockBlob { type = options?.type ?? ''; })() as unknown as Blob;
     } as unknown as typeof Blob);
 
@@ -372,14 +372,8 @@ describe('downloadDxf', () => {
   });
 
   it('sets download attribute to filename', () => {
-    const anchor = { href: '', download: '', click: mockClick };
-    createElementSpy.mockImplementation((tag: string) => {
-      if (tag === 'a') return anchor as unknown as HTMLElement;
-      return document.createElement(tag);
-    });
-
     downloadDxf('0\nEOF\n', 'panel-trace-2026-03-28.dxf');
-    expect(anchor.download).toBe('panel-trace-2026-03-28.dxf');
+    expect(mockAnchor.download).toBe('panel-trace-2026-03-28.dxf');
   });
 
   it('clicks the anchor element', () => {
