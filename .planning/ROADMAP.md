@@ -83,7 +83,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — TDD: Pure DXF export utility (buildDxfString, isShapeClosed, downloadDxf) with Vitest
+- [x] 04-01-PLAN.md — TDD: Pure DXF export utility (buildDxfString, isShapeClosed, downloadDxf) with Vitest
 - [ ] 04-02-PLAN.md — Export button in Toolbar, ClosureWarningModal, store wiring, human verification
 
 **UI hint**: yes
