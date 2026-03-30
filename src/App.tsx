@@ -32,6 +32,9 @@ function App() {
         <DropZoneOverlay onFileSelect={onFileSelect} />
       )}
       <RulerOverlay />
+      <div className="fixed bottom-2 right-2 text-[10px] text-[#444] select-none pointer-events-none z-10">
+        v{__APP_VERSION__}
+      </div>
     </div>
   );
 }
