@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Layer, Line, Shape, Circle } from 'react-konva';
 import { useAppStore } from '../store/useAppStore';
-import { snapToEndpoint, circumcircle, arcDirectionFromThreePoints } from '../utils/geometry';
+import { snapToEndpoint, arcFromSagitta } from '../utils/geometry';
 import type { LineSegment, ArcSegment } from '../types';
 
 export function DrawingLayer() {
@@ -19,6 +19,7 @@ export function DrawingLayer() {
   }, [drawing.cursorWorld, segments, viewport, toolMode]);
 
   // Compute arc ghost preview when arc tool has 2 click points + cursor
+  // Uses sagitta-based bending: cursor distance from chord controls arc curvature
   const arcGhostData = useMemo(() => {
     if (
       toolMode !== 'arc' ||
@@ -28,14 +29,9 @@ export function DrawingLayer() {
       return null;
     }
     const [p1, p2] = drawing.clickPoints;
-    const cursor = drawing.cursorWorld;
-    const result = circumcircle(p1, p2, cursor);
-    if (result.collinear) return { collinear: true as const };
-    const { center, radius } = result;
-    const startAngle = Math.atan2(p1.y - center.y, p1.x - center.x);
-    const endAngle = Math.atan2(p2.y - center.y, p2.x - center.x);
-    const anticlockwise = arcDirectionFromThreePoints(p1, p2, cursor, center);
-    return { collinear: false as const, center, radius, startAngle, endAngle, anticlockwise };
+    const result = arcFromSagitta(p1, p2, drawing.cursorWorld);
+    if (!result) return null; // cursor too close to chord — no arc preview
+    return result;
   }, [toolMode, drawing.clickPoints, drawing.cursorWorld]);
 
   const handleLayerClick = (e: { target: { getLayer: () => unknown; getStage: () => unknown } }) => {
@@ -133,48 +129,49 @@ export function DrawingLayer() {
           />
         )}
 
-      {/* Ghost preview: Arc tool with 2 click points — arc or line fallback */}
+      {/* Ghost preview: Arc tool with 2 click points — sagitta-based bend */}
       {toolMode === 'arc' &&
         drawing.clickPoints.length === 2 &&
         drawing.cursorWorld &&
         arcGhostData && (
-          arcGhostData.collinear ? (
-            // Collinear fallback: straight line between first two points
-            <Line
-              points={[
-                drawing.clickPoints[0].x,
-                drawing.clickPoints[0].y,
-                drawing.clickPoints[1].x,
-                drawing.clickPoints[1].y,
-              ]}
-              stroke="#22d3ee"
-              strokeWidth={1.5}
-              dash={[6, 4]}
-              listening={false}
-            />
-          ) : (
-            // Valid circumcircle: render arc preview
-            <Shape
-              sceneFunc={(ctx, shape) => {
-                if (arcGhostData.collinear) return;
-                ctx.beginPath();
-                ctx.arc(
-                  arcGhostData.center.x,
-                  arcGhostData.center.y,
-                  arcGhostData.radius,
-                  arcGhostData.startAngle,
-                  arcGhostData.endAngle,
-                  arcGhostData.anticlockwise
-                );
-                ctx.fillStrokeShape(shape);
-              }}
-              stroke="#22d3ee"
-              strokeWidth={1.5}
-              dash={[6, 4]}
-              fill="transparent"
-              listening={false}
-            />
-          )
+          <Shape
+            sceneFunc={(ctx, shape) => {
+              ctx.beginPath();
+              ctx.arc(
+                arcGhostData.center.x,
+                arcGhostData.center.y,
+                arcGhostData.radius,
+                arcGhostData.startAngle,
+                arcGhostData.endAngle,
+                arcGhostData.anticlockwise
+              );
+              ctx.fillStrokeShape(shape);
+            }}
+            stroke="#22d3ee"
+            strokeWidth={1.5}
+            dash={[6, 4]}
+            fill="transparent"
+            listening={false}
+          />
+        )}
+
+      {/* Fallback: Arc tool with 2 click points but cursor on chord — show straight line */}
+      {toolMode === 'arc' &&
+        drawing.clickPoints.length === 2 &&
+        drawing.cursorWorld &&
+        !arcGhostData && (
+          <Line
+            points={[
+              drawing.clickPoints[0].x,
+              drawing.clickPoints[0].y,
+              drawing.clickPoints[1].x,
+              drawing.clickPoints[1].y,
+            ]}
+            stroke="#22d3ee"
+            strokeWidth={1.5}
+            dash={[6, 4]}
+            listening={false}
+          />
         )}
 
       {/* Click point indicators */}

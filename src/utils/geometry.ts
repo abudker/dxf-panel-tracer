@@ -93,6 +93,85 @@ export function arcDirectionFromThreePoints(
 }
 
 /**
+ * Compute an arc from two endpoints and a cursor position using sagitta-based bending.
+ *
+ * Projects the cursor onto the perpendicular bisector of the chord (p1→p2) to get
+ * a signed sagitta (arc height). This produces smooth, predictable arc bending that
+ * doesn't swing wildly when the cursor is near the chord line.
+ *
+ * Returns the circumcircle center, radius, canvas angles, anticlockwise flag,
+ * and a synthetic p3 (the midpoint of the arc, on the perpendicular bisector).
+ *
+ * Returns null if the sagitta is too small (essentially a straight line).
+ */
+export function arcFromSagitta(
+  p1: Point,
+  p2: Point,
+  cursor: Point
+): {
+  center: Point;
+  radius: number;
+  startAngle: number;
+  endAngle: number;
+  anticlockwise: boolean;
+  p3: Point;
+} | null {
+  // Chord midpoint and half-length
+  const mx = (p1.x + p2.x) / 2;
+  const my = (p1.y + p2.y) / 2;
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  const chordLen = Math.sqrt(dx * dx + dy * dy);
+  if (chordLen < 1e-6) return null;
+  const halfChord = chordLen / 2;
+
+  // Perpendicular bisector direction (unit normal to chord)
+  // Points "left" of the chord direction p1→p2
+  const nx = -dy / chordLen;
+  const ny = dx / chordLen;
+
+  // Signed distance from cursor to chord line (positive = left of p1→p2)
+  const cursorDx = cursor.x - mx;
+  const cursorDy = cursor.y - my;
+  const sagitta = cursorDx * nx + cursorDy * ny;
+
+  // If sagitta is too small, it's basically a straight line
+  if (Math.abs(sagitta) < 2) return null;
+
+  // Clamp sagitta to prevent extreme arcs (radius > 10x chord length)
+  const maxSag = halfChord * 5;
+  const clampedSag = Math.max(-maxSag, Math.min(maxSag, sagitta));
+
+  // Compute radius from sagitta: r = (h² + l²) / (2h) where h = |sagitta|, l = halfChord
+  const absH = Math.abs(clampedSag);
+  const radius = (absH * absH + halfChord * halfChord) / (2 * absH);
+
+  // Center is on the perpendicular bisector, opposite the bulge side.
+  // Distance from midpoint to center along the normal = (radius - sagitta).
+  // The center is on the opposite side from the sagitta direction.
+  const center: Point = {
+    x: mx - nx * (radius - clampedSag),
+    y: my - ny * (radius - clampedSag),
+  };
+
+  // p3 is the point on the arc at the midpoint of the chord, on the bulge side
+  const p3: Point = {
+    x: mx + nx * clampedSag,
+    y: my + ny * clampedSag,
+  };
+
+  // Canvas angles
+  const startAngle = Math.atan2(p1.y - center.y, p1.x - center.x);
+  const endAngle = Math.atan2(p2.y - center.y, p2.x - center.x);
+
+  // Direction: if sagitta > 0, arc goes CCW (left side); if < 0, CW (right side)
+  // Use arcDirectionFromThreePoints for correctness
+  const anticlockwise = arcDirectionFromThreePoints(p1, p2, p3, center);
+
+  return { center, radius, startAngle, endAngle, anticlockwise, p3 };
+}
+
+/**
  * Extract all unique endpoint positions from a list of segments.
  * For LineSegment: start and end.
  * For ArcSegment: p1 and p2 (the user-clicked endpoints, NOT the center).
