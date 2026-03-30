@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Layer, Line, Shape, Circle } from 'react-konva';
 import { useAppStore } from '../store/useAppStore';
-import { snapToEndpoint, arcFromSagitta } from '../utils/geometry';
+import { snapToEndpoint, circumcircle, arcDirectionFromThreePoints } from '../utils/geometry';
 import type { LineSegment, ArcSegment } from '../types';
 
 export function DrawingLayer() {
@@ -19,7 +19,7 @@ export function DrawingLayer() {
   }, [drawing.cursorWorld, segments, viewport, toolMode]);
 
   // Compute arc ghost preview when arc tool has 2 click points + cursor
-  // Uses sagitta-based bending: cursor distance from chord controls arc curvature
+  // Arc passes through the cursor position — move cursor to bend arc in any direction
   const arcGhostData = useMemo(() => {
     if (
       toolMode !== 'arc' ||
@@ -29,9 +29,14 @@ export function DrawingLayer() {
       return null;
     }
     const [p1, p2] = drawing.clickPoints;
-    const result = arcFromSagitta(p1, p2, drawing.cursorWorld);
-    if (!result) return null; // cursor too close to chord — no arc preview
-    return result;
+    const cursor = drawing.cursorWorld;
+    const result = circumcircle(p1, p2, cursor);
+    if (result.collinear) return null;
+    const { center, radius } = result;
+    const startAngle = Math.atan2(p1.y - center.y, p1.x - center.x);
+    const endAngle = Math.atan2(p2.y - center.y, p2.x - center.x);
+    const anticlockwise = arcDirectionFromThreePoints(p1, p2, cursor, center);
+    return { center, radius, startAngle, endAngle, anticlockwise };
   }, [toolMode, drawing.clickPoints, drawing.cursorWorld]);
 
   const handleLayerClick = (e: { target: { getLayer: () => unknown; getStage: () => unknown } }) => {

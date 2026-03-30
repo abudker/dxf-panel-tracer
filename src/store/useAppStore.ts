@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Viewport, ToolMode, Point, CalibrationState, CalibrationClickState, CalibrationUnit, Segment, DrawingState, GapAnalysis } from '../types';
-import { arcFromSagitta } from '../utils/geometry';
+import { circumcircle, arcDirectionFromThreePoints } from '../utils/geometry';
 import { buildDxfString, isShapeClosed, downloadDxf, generateDxfFilename, analyzeGaps } from '../utils/dxfExport';
 
 interface AppState {
@@ -207,27 +207,30 @@ export const useAppStore = create<AppState>((set, get) => ({
         // First two clicks: collect start and end points
         set({ drawing: { ...drawing, clickPoints: [...clickPoints, p] } });
       } else if (clickPoints.length === 2) {
-        // Third click: commit arc using sagitta-based bend from current cursor position
-        const arcData = arcFromSagitta(clickPoints[0], clickPoints[1], p);
-        if (!arcData) {
-          // Sagitta too small — cursor is on the chord line, treat as straight line
+        // Third click: cursor position IS the third point — arc passes through it
+        const result = circumcircle(clickPoints[0], clickPoints[1], p);
+        if (result.collinear) {
           set({
             toastMessage: 'Move cursor away from the line to create an arc',
             drawing: { clickPoints: [], cursorWorld: null },
           });
           return;
         }
+        const { center, radius } = result;
+        const startAngle = Math.atan2(clickPoints[0].y - center.y, clickPoints[0].x - center.x);
+        const endAngle = Math.atan2(clickPoints[1].y - center.y, clickPoints[1].x - center.x);
+        const anticlockwise = arcDirectionFromThreePoints(clickPoints[0], clickPoints[1], p, center);
         const arcSeg = {
           id: crypto.randomUUID(),
           type: 'arc' as const,
-          center: arcData.center,
-          radius: arcData.radius,
-          startAngle: arcData.startAngle,
-          endAngle: arcData.endAngle,
-          anticlockwise: arcData.anticlockwise,
+          center,
+          radius,
+          startAngle,
+          endAngle,
+          anticlockwise,
           p1: clickPoints[0],
           p2: clickPoints[1],
-          p3: arcData.p3,
+          p3: p,
         };
         get().addSegment(arcSeg);
       }
