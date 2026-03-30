@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Viewport, ToolMode, Point, CalibrationState, CalibrationClickState, CalibrationUnit, Segment, DrawingState, GapAnalysis } from '../types';
-import { circumcircle, arcDirectionFromThreePoints } from '../utils/geometry';
+import { arcFromBulgeValue } from '../utils/geometry';
 import { buildDxfString, isShapeClosed, downloadDxf, generateDxfFilename, analyzeGaps } from '../utils/dxfExport';
 
 interface AppState {
@@ -52,6 +52,7 @@ interface AppState {
   selectSegment: (id: string | null) => void;
   setDrawingClick: (p: Point) => void;
   setCursorWorld: (p: Point | null) => void;
+  adjustArcBulge: (delta: number) => void;
   clearDrawing: () => void;
   undoDraw: () => void;
   redoDraw: () => void;
@@ -90,7 +91,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({
         toolMode: mode,
         calibrationClick: { clickPoints: [], isModalOpen: false },
-        drawing: { clickPoints: [], cursorWorld: null },
+        drawing: { clickPoints: [], cursorWorld: null, arcBulge: 0 },
         selectedSegmentId: null,
       });
       return;
@@ -98,7 +99,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     // On any mode switch, clear transient drawing state (abandons in-progress click sequences)
     set({
       toolMode: mode,
-      drawing: { clickPoints: [], cursorWorld: null },
+      drawing: { clickPoints: [], cursorWorld: null, arcBulge: 0 },
       selectedSegmentId: null,
     });
   },
@@ -158,7 +159,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   selectedSegmentId: null,
   drawHistory: [],
   drawFuture: [],
-  drawing: { clickPoints: [], cursorWorld: null },
+  drawing: { clickPoints: [], cursorWorld: null, arcBulge: 0 },
 
   // Drawing actions
   addSegment: (seg) => {
@@ -168,7 +169,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       segments: [...segments, seg],
       drawHistory: newHistory,
       drawFuture: [],
-      drawing: { clickPoints: [], cursorWorld: null },
+      drawing: { clickPoints: [], cursorWorld: null, arcBulge: 0 },
       selectedSegmentId: null,
     });
   },
@@ -192,7 +193,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     if (toolMode === 'line') {
       if (clickPoints.length === 0) {
-        set({ drawing: { clickPoints: [p], cursorWorld: drawing.cursorWorld } });
+        set({ drawing: { ...drawing, clickPoints: [p] } });
       } else if (clickPoints.length === 1) {
         const lineSeg = {
           id: crypto.randomUUID(),
@@ -207,30 +208,27 @@ export const useAppStore = create<AppState>((set, get) => ({
         // First two clicks: collect start and end points
         set({ drawing: { ...drawing, clickPoints: [...clickPoints, p] } });
       } else if (clickPoints.length === 2) {
-        // Third click: cursor position IS the third point — arc passes through it
-        const result = circumcircle(clickPoints[0], clickPoints[1], p);
-        if (result.collinear) {
+        // Third click: commit arc using scroll-controlled bulge
+        const { arcBulge } = drawing;
+        const arcData = arcFromBulgeValue(clickPoints[0], clickPoints[1], arcBulge);
+        if (!arcData) {
           set({
-            toastMessage: 'Move cursor away from the line to create an arc',
-            drawing: { clickPoints: [], cursorWorld: null },
+            toastMessage: 'Scroll to bend the arc before clicking',
+            drawing: { clickPoints: [], cursorWorld: null, arcBulge: 0 },
           });
           return;
         }
-        const { center, radius } = result;
-        const startAngle = Math.atan2(clickPoints[0].y - center.y, clickPoints[0].x - center.x);
-        const endAngle = Math.atan2(clickPoints[1].y - center.y, clickPoints[1].x - center.x);
-        const anticlockwise = arcDirectionFromThreePoints(clickPoints[0], clickPoints[1], p, center);
         const arcSeg = {
           id: crypto.randomUUID(),
           type: 'arc' as const,
-          center,
-          radius,
-          startAngle,
-          endAngle,
-          anticlockwise,
+          center: arcData.center,
+          radius: arcData.radius,
+          startAngle: arcData.startAngle,
+          endAngle: arcData.endAngle,
+          anticlockwise: arcData.anticlockwise,
           p1: clickPoints[0],
           p2: clickPoints[1],
-          p3: p,
+          p3: arcData.p3,
         };
         get().addSegment(arcSeg);
       }
@@ -239,7 +237,12 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setCursorWorld: (p) => set({ drawing: { ...get().drawing, cursorWorld: p } }),
 
-  clearDrawing: () => set({ drawing: { clickPoints: [], cursorWorld: null } }),
+  adjustArcBulge: (delta) => {
+    const { drawing } = get();
+    set({ drawing: { ...drawing, arcBulge: drawing.arcBulge + delta } });
+  },
+
+  clearDrawing: () => set({ drawing: { clickPoints: [], cursorWorld: null, arcBulge: 0 } }),
 
   undoDraw: () => {
     const { segments, drawHistory, drawFuture } = get();

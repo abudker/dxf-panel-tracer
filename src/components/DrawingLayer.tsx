@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Layer, Line, Shape, Circle } from 'react-konva';
 import { useAppStore } from '../store/useAppStore';
-import { snapToEndpoint, circumcircle, arcDirectionFromThreePoints } from '../utils/geometry';
+import { snapToEndpoint, arcFromBulgeValue } from '../utils/geometry';
 import type { LineSegment, ArcSegment } from '../types';
 
 export function DrawingLayer() {
@@ -18,26 +18,18 @@ export function DrawingLayer() {
     return result.snapped ? result.point : null;
   }, [drawing.cursorWorld, segments, viewport, toolMode]);
 
-  // Compute arc ghost preview when arc tool has 2 click points + cursor
-  // Arc passes through the cursor position — move cursor to bend arc in any direction
+  // Compute arc ghost preview when arc tool has 2 click points
+  // Scroll wheel controls curvature via arcBulge
   const arcGhostData = useMemo(() => {
     if (
       toolMode !== 'arc' ||
-      drawing.clickPoints.length !== 2 ||
-      !drawing.cursorWorld
+      drawing.clickPoints.length !== 2
     ) {
       return null;
     }
     const [p1, p2] = drawing.clickPoints;
-    const cursor = drawing.cursorWorld;
-    const result = circumcircle(p1, p2, cursor);
-    if (result.collinear) return null;
-    const { center, radius } = result;
-    const startAngle = Math.atan2(p1.y - center.y, p1.x - center.x);
-    const endAngle = Math.atan2(p2.y - center.y, p2.x - center.x);
-    const anticlockwise = arcDirectionFromThreePoints(p1, p2, cursor, center);
-    return { center, radius, startAngle, endAngle, anticlockwise };
-  }, [toolMode, drawing.clickPoints, drawing.cursorWorld]);
+    return arcFromBulgeValue(p1, p2, drawing.arcBulge);
+  }, [toolMode, drawing.clickPoints, drawing.arcBulge]);
 
   const handleLayerClick = (e: { target: { getLayer: () => unknown; getStage: () => unknown } }) => {
     const state = useAppStore.getState();

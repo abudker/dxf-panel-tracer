@@ -12,6 +12,21 @@ export function useViewport(stageRef: RefObject<Konva.Stage | null>) {
     // CRITICAL: prevents browser page scroll
     e.evt.preventDefault();
 
+    const state = useAppStore.getState();
+
+    // When arc tool has 2 points placed and NOT holding Ctrl/Cmd, scroll adjusts arc curvature
+    if (
+      state.toolMode === 'arc' &&
+      state.drawing.clickPoints.length === 2 &&
+      !e.evt.ctrlKey &&
+      !e.evt.metaKey
+    ) {
+      const delta = e.evt.deltaY > 0 ? -5 : 5;
+      state.adjustArcBulge(delta);
+      return;
+    }
+
+    // Normal zoom behavior (always, or Ctrl+scroll during arc bending)
     const stage = stageRef.current;
     if (!stage) return;
 
@@ -39,7 +54,7 @@ export function useViewport(stageRef: RefObject<Konva.Stage | null>) {
     stage.position(newPos);
 
     // Sync to Zustand — use getState() to avoid stale closures in event callbacks
-    useAppStore.getState().setViewport({ scale: newScale, x: newPos.x, y: newPos.y });
+    state.setViewport({ scale: newScale, x: newPos.x, y: newPos.y });
   };
 
   const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {

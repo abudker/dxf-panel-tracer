@@ -93,6 +93,62 @@ export function arcDirectionFromThreePoints(
 }
 
 /**
+ * Compute an arc from two endpoints and a signed sagitta (arc height) value.
+ *
+ * The sagitta controls curvature: positive = bend left of p1→p2 direction,
+ * negative = bend right. The cursor side determines direction, scroll controls magnitude.
+ *
+ * Returns null if sagitta is too small (essentially a straight line).
+ */
+export function arcFromBulgeValue(
+  p1: Point,
+  p2: Point,
+  sagitta: number
+): {
+  center: Point;
+  radius: number;
+  startAngle: number;
+  endAngle: number;
+  anticlockwise: boolean;
+  p3: Point;
+} | null {
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  const chordLen = Math.sqrt(dx * dx + dy * dy);
+  if (chordLen < 1e-6 || Math.abs(sagitta) < 2) return null;
+
+  const halfChord = chordLen / 2;
+  const mx = (p1.x + p2.x) / 2;
+  const my = (p1.y + p2.y) / 2;
+
+  // Perpendicular normal (left of p1→p2)
+  const nx = -dy / chordLen;
+  const ny = dx / chordLen;
+
+  // Radius from sagitta formula: r = (h² + l²) / (2|h|)
+  const absH = Math.abs(sagitta);
+  const radius = (absH * absH + halfChord * halfChord) / (2 * absH);
+
+  // Center on perpendicular bisector, opposite side from bulge
+  const center: Point = {
+    x: mx - nx * (radius - sagitta),
+    y: my - ny * (radius - sagitta),
+  };
+
+  // p3 is the arc midpoint (on the bulge side)
+  const p3: Point = {
+    x: mx + nx * sagitta,
+    y: my + ny * sagitta,
+  };
+
+  const startAngle = Math.atan2(p1.y - center.y, p1.x - center.x);
+  const endAngle = Math.atan2(p2.y - center.y, p2.x - center.x);
+  const anticlockwise = arcDirectionFromThreePoints(p1, p2, p3, center);
+
+  return { center, radius, startAngle, endAngle, anticlockwise, p3 };
+}
+
+/**
  * Compute an arc from two endpoints and a cursor position using sagitta-based bending.
  *
  * Projects the cursor onto the perpendicular bisector of the chord (p1→p2) to get

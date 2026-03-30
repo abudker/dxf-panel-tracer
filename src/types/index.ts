@@ -45,6 +45,7 @@ export type Segment = LineSegment | ArcSegment;
 export interface DrawingState {
   clickPoints: Point[];       // 0-2 accumulated click points in world coords
   cursorWorld: Point | null;  // current cursor in world coords for ghost preview
+  arcBulge: number;           // scroll-controlled arc curvature (signed sagitta in world px)
 }
 
 /** Analysis of gaps between segment endpoints for closure assistance */
