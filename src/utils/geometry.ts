@@ -129,10 +129,13 @@ export function arcFromBulgeValue(
   const absH = Math.abs(sagitta);
   const radius = (absH * absH + halfChord * halfChord) / (2 * absH);
 
-  // Center on perpendicular bisector, opposite side from bulge
+  // Center on perpendicular bisector, opposite side from bulge.
+  // d = sagitta - radius * sign(sagitta) puts center on the correct side for both directions.
+  const sign = sagitta > 0 ? 1 : -1;
+  const d = sagitta - radius * sign;
   const center: Point = {
-    x: mx - nx * (radius - sagitta),
-    y: my - ny * (radius - sagitta),
+    x: mx + nx * d,
+    y: my + ny * d,
   };
 
   // p3 is the arc midpoint (on the bulge side)
@@ -202,12 +205,12 @@ export function arcFromSagitta(
   const absH = Math.abs(clampedSag);
   const radius = (absH * absH + halfChord * halfChord) / (2 * absH);
 
-  // Center is on the perpendicular bisector, opposite the bulge side.
-  // Distance from midpoint to center along the normal = (radius - sagitta).
-  // The center is on the opposite side from the sagitta direction.
+  // Center on perpendicular bisector, opposite the bulge side.
+  const sagSign = clampedSag > 0 ? 1 : -1;
+  const d = clampedSag - radius * sagSign;
   const center: Point = {
-    x: mx - nx * (radius - clampedSag),
-    y: my - ny * (radius - clampedSag),
+    x: mx + nx * d,
+    y: my + ny * d,
   };
 
   // p3 is the point on the arc at the midpoint of the chord, on the bulge side
